@@ -48,3 +48,5 @@ obj/
 
 gradle.properties
 *.hprof
+
+/lib-oboe
