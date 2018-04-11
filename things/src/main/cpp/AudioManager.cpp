@@ -9,6 +9,8 @@ constexpr int32_t kDefaultChannelCount = 2;
 AudioManager::AudioManager() {
     mChannelCount = kDefaultChannelCount;
     createPlaybackStream();
+
+    mOscillator->setup(440.0, mPlayStream->getSampleRate(), 0.25);
 }
 
 AudioManager::~AudioManager() {
@@ -70,13 +72,17 @@ AudioManager::onAudioReady(oboe::AudioStream *audioStream, void *audioData, int3
     int32_t channelCount = audioStream->getChannelCount();
     if (audioStream->getFormat() == oboe::AudioFormat::Float) {
         for (int i = 0; i < channelCount; ++i) {
-            wavGenerator->render(static_cast<float *>(audioData) + i, i, channelCount,
-                                 numFrames);
+            wavGenerator->render(static_cast<float *>(audioData) + i, i, channelCount, numFrames);
+        }
+        for (int i = 0; i < channelCount; ++i) {
+            mOscillator->render(static_cast<float *>(audioData) + i, channelCount, numFrames);
         }
     } else {
         for (int i = 0; i < channelCount; ++i) {
-            wavGenerator->render(static_cast<int16_t *>(audioData) + i, i, channelCount,
-                                 numFrames);
+            wavGenerator->render(static_cast<int16_t *>(audioData) + i, i, channelCount, numFrames);
+        }
+        for (int i = 0; i < channelCount; ++i) {
+            mOscillator->render(static_cast<int16_t *>(audioData) + i, channelCount, numFrames);
         }
     }
     return oboe::DataCallbackResult::Continue;

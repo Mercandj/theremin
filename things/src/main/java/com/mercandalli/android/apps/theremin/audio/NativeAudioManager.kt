@@ -26,6 +26,10 @@ internal class NativeAudioManager internal constructor(
         nativePlay(id)
     }
 
+    override fun setSineFrequency(frequency: Double) {
+        nativeSetSineFrequency(frequency)
+    }
+
     private fun extractId(assetsFilePath: String): Int {
         for (i in 0 until assetsFilePaths.count()) {
             if (assetsFilePaths[i] == assetsFilePath) {
@@ -88,4 +92,5 @@ internal class NativeAudioManager internal constructor(
 
     private external fun nativeLoad(internalStoragePaths: Array<String>)
     private external fun nativePlay(index: Int)
+    private external fun nativeSetSineFrequency(frequency: Double)
 }

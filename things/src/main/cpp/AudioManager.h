@@ -6,8 +6,11 @@
 #include <oboe/Oboe.h>
 #include <mutex>
 #include "WavGenerator.h"
+#include "SineGenerator.h"
+
 
 constexpr int32_t kBufferSizeAutomatic = 0;
+constexpr int32_t kMaximumChannelCount = 8;
 
 class AudioManager : oboe::AudioStreamCallback {
 
@@ -25,6 +28,10 @@ public:
         return wavGenerator;
     }
 
+    inline void setSineFrequency(double frequency) {
+        mOscillator->setup(frequency, mPlayStream->getSampleRate(), 0.25);
+    }
+
 private:
     oboe::AudioApi mAudioApi = oboe::AudioApi::Unspecified;
     int32_t mPlaybackDeviceId = oboe::kUnspecified;
@@ -36,6 +43,9 @@ private:
     std::mutex mRestartingLock;
 
     WavGenerator *wavGenerator = new WavGenerator();
+
+    // The SineGenerators generate audio data, feel free to replace with your own audio generators
+    SineGenerator *mOscillator = new SineGenerator();
 
     void createPlaybackStream();
 

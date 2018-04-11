@@ -30,4 +30,13 @@ Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativePlay(
     audioManager->getWavGenerator()->play(indexJava);
 }
 
+JNIEXPORT void
+JNICALL
+Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativeSetSineFrequency(
+        JNIEnv *env,
+        jobject /* this */,
+        jdouble frequencyJava) {
+    audioManager->setSineFrequency(frequencyJava);
+}
+
 }

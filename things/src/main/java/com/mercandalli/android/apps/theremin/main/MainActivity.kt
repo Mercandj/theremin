@@ -8,11 +8,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
+import android.widget.TimePicker
 import com.mercandalli.android.apps.theremin.R
 import com.mercandalli.android.apps.theremin.application.AppUtils.launchApp
 import com.mercandalli.android.apps.theremin.audio.AudioManager
 import com.mercandalli.android.apps.theremin.gpio.GpioManagerImpl
 import com.mercandalli.android.apps.theremin.wifi.WifiUtils.Companion.wifiIpAddress
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -97,19 +99,29 @@ class MainActivity : AppCompatActivity() {
         val distanceInt = gpioManager.getDistance()
         distanceTextView.text = "Distance: $distanceInt cm"
 
-        when (distanceInt) {
-            in 0..25 -> {
-                audioManager.play(samples[0])
+        val frequencyMax = 650.0
+        val frequencyMin = 150.0
+
+        val frequency = frequencyMin +
+                (frequencyMax - frequencyMin) * distanceInt.toFloat() / 100f
+        audioManager.setSineFrequency(frequency)
+
+        if (lastPlayTime < System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3)) {
+            when (distanceInt) {
+                in 0..25 -> {
+                    audioManager.play(samples[0])
+                }
+                in 25..50 -> {
+                    audioManager.play(samples[1])
+                }
+                in 50..75 -> {
+                    audioManager.play(samples[2])
+                }
+                in 75..100 -> {
+                    audioManager.play(samples[3])
+                }
             }
-            in 25..50 -> {
-                audioManager.play(samples[1])
-            }
-            in 50..75 -> {
-                audioManager.play(samples[2])
-            }
-            in 75..100 -> {
-                audioManager.play(samples[3])
-            }
+            lastPlayTime = System.currentTimeMillis()
         }
 
         if (distanceInt < 40) {
@@ -119,4 +131,6 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed(runnableDismissSnackbar, 1_500)
         }
     }
+
+    private var lastPlayTime: Long = 0
 }

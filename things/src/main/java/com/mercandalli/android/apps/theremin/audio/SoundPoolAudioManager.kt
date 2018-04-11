@@ -24,6 +24,9 @@ internal class SoundPoolAudioManager constructor(
             soundPool.play(slots[assetsFilePath]!!, 1F, 1F, 1, 0, 1f)
         }
     }
+    override fun setSineFrequency(frequency: Double) {
+
+    }
 
     @Suppress("ObjectLiteralToLambda")
     private fun loadSound(strSound: String): Int {
