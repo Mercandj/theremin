@@ -1,7 +1,8 @@
-package com.mercandalli.android.apps.theremin.audio
+package com.mercandalli.android.sdk.soundsystem
 
 import android.content.Context
 import java.io.*
+import java.util.*
 
 internal class NativeAudioManager internal constructor(
         private val context: Context) : AudioManager {
@@ -28,6 +29,14 @@ internal class NativeAudioManager internal constructor(
 
     override fun setSineFrequency(frequency: Double) {
         nativeSetSineFrequency(frequency)
+    }
+
+    override fun setOnPausedListener(listener: AudioManager.OnPausedListener?) {
+
+    }
+
+    override fun setVolume(volume: Float) {
+        nativeSetVolume(volume)
     }
 
     private fun extractId(assetsFilePath: String): Int {
@@ -93,4 +102,5 @@ internal class NativeAudioManager internal constructor(
     private external fun nativeLoad(internalStoragePaths: Array<String>)
     private external fun nativePlay(index: Int)
     private external fun nativeSetSineFrequency(frequency: Double)
+    private external fun nativeSetVolume(volume: Float)
 }

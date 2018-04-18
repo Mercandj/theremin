@@ -32,6 +32,10 @@ public:
         mOscillator->setup(frequency, mPlayStream->getSampleRate(), 0.25);
     }
 
+    inline void setVolume(float volume) {
+        wavGenerator->setVolume(volume);
+    }
+
 private:
     oboe::AudioApi mAudioApi = oboe::AudioApi::Unspecified;
     int32_t mPlaybackDeviceId = oboe::kUnspecified;

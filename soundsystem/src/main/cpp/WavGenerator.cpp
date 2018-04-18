@@ -23,7 +23,7 @@ void WavGenerator::render(float *buffer, int channel, int32_t channelCount, int3
     if (channel == 0) {
         for (int i = 0, sampleIndex = 0; i < numFrames; i++) {
             buffer[sampleIndex] = shortToFloat(
-                    buffers[lastPlayedId][currentPositionL[lastPlayedId]]);
+                    buffers[lastPlayedId][currentPositionL[lastPlayedId]]) * volume;
             sampleIndex += channelCount;
             currentPositionL[lastPlayedId] += channelCount;
         }
@@ -33,7 +33,7 @@ void WavGenerator::render(float *buffer, int channel, int32_t channelCount, int3
     } else {
         for (int i = 0, sampleIndex = 0; i < numFrames; i++) {
             buffer[sampleIndex] = shortToFloat(
-                    buffers[lastPlayedId][currentPositionR[lastPlayedId]]);
+                    buffers[lastPlayedId][currentPositionR[lastPlayedId]]) * volume;
             sampleIndex += channelCount;
             currentPositionR[lastPlayedId] += channelCount;
         }

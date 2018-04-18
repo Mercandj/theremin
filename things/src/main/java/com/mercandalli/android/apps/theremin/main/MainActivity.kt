@@ -8,12 +8,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
-import android.widget.TimePicker
 import com.mercandalli.android.apps.theremin.R
 import com.mercandalli.android.apps.theremin.application.AppUtils.launchApp
-import com.mercandalli.android.apps.theremin.audio.AudioManager
+import com.mercandalli.android.sdk.soundsystem.AudioManager
 import com.mercandalli.android.apps.theremin.gpio.GpioManagerImpl
 import com.mercandalli.android.apps.theremin.wifi.WifiUtils.Companion.wifiIpAddress
+import com.mercandalli.android.sdk.soundsystem.SoundSystemModule.Companion.audioManager
+import com.mercandalli.android.sdk.soundsystem.ThereminManager
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -31,13 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var snackbar: Snackbar
 
-    private lateinit var audioManager: AudioManager
-
-    private val samples = listOf(
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_02.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_03.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_04.wav")
+    private lateinit var thereminManager: ThereminManager
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,11 +53,10 @@ class MainActivity : AppCompatActivity() {
 
         handler.post(runnableUpdateGpio7)
         handler.post(runnableUpdateDistance)
-        audioManager = MainGraph.get().provideAudioManager()
+        thereminManager = MainGraph.get().provideThereminManager()
 
         if (savedInstanceState == null) {
             gpioManager.startDistanceMeasure()
-            audioManager.load(samples)
         }
     }
 
@@ -98,7 +92,9 @@ class MainActivity : AppCompatActivity() {
     private fun syncDistance() {
         val distanceInt = gpioManager.getDistance()
         distanceTextView.text = "Distance: $distanceInt cm"
+        thereminManager.onDistanceChanged(distanceInt)
 
+        /*
         val frequencyMax = 650.0
         val frequencyMin = 150.0
 
@@ -123,6 +119,7 @@ class MainActivity : AppCompatActivity() {
             }
             lastPlayTime = System.currentTimeMillis()
         }
+        */
 
         if (distanceInt < 40) {
             handler.removeCallbacks(runnableDismissSnackbar)

@@ -1,4 +1,4 @@
-package com.mercandalli.android.apps.theremin.audio
+package com.mercandalli.android.sdk.soundsystem
 
 import android.content.res.AssetManager
 import android.media.SoundPool
@@ -12,6 +12,9 @@ internal class SoundPoolAudioManager constructor(
 
     private var loaded = HashMap<Int, Boolean>()
     private var slots = HashMap<String, Int>()
+    private var volumes = HashMap<String, Float>()
+
+    private var onPausedListener: AudioManager.OnPausedListener? = null
 
     override fun load(assetsFilePaths: List<String>) {
         for (assetsFilePath in assetsFilePaths) {
@@ -21,11 +24,24 @@ internal class SoundPoolAudioManager constructor(
 
     override fun play(assetsFilePath: String) {
         if (loaded.containsKey(slots[assetsFilePath]) && loaded[slots[assetsFilePath]]!!) {
-            soundPool.play(slots[assetsFilePath]!!, 1F, 1F, 1, 0, 1f)
+            val volume = if (volumes.containsKey(assetsFilePath)) volumes[assetsFilePath]!! else 1f
+            soundPool.play(slots[assetsFilePath]!!, volume, volume, 1, 0, 1f)
         }
     }
+
     override fun setSineFrequency(frequency: Double) {
 
+    }
+
+    override fun setOnPausedListener(listener: AudioManager.OnPausedListener?) {
+        onPausedListener = listener
+    }
+
+    override fun setVolume(volume: Float) {
+        for (key in slots.keys) {
+            volumes[key] = volume
+            soundPool.setVolume(slots[key]!!, volume, volume)
+        }
     }
 
     @Suppress("ObjectLiteralToLambda")

@@ -8,7 +8,7 @@ extern "C" {
 
 JNIEXPORT void
 JNICALL
-Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativeLoad(
+Java_com_mercandalli_android_sdk_soundsystem_NativeAudioManager_nativeLoad(
         JNIEnv *env,
         jobject /* this */,
         jobjectArray internal_storage_paths_java) {
@@ -23,7 +23,7 @@ Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativeLoad(
 
 JNIEXPORT void
 JNICALL
-Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativePlay(
+Java_com_mercandalli_android_sdk_soundsystem_NativeAudioManager_nativePlay(
         JNIEnv *env,
         jobject /* this */,
         jint indexJava) {
@@ -32,11 +32,20 @@ Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativePlay(
 
 JNIEXPORT void
 JNICALL
-Java_com_mercandalli_android_apps_theremin_audio_NativeAudioManager_nativeSetSineFrequency(
+Java_com_mercandalli_android_sdk_soundsystem_NativeAudioManager_nativeSetSineFrequency(
         JNIEnv *env,
         jobject /* this */,
         jdouble frequencyJava) {
     audioManager->setSineFrequency(frequencyJava);
+}
+
+JNIEXPORT void
+JNICALL
+Java_com_mercandalli_android_sdk_soundsystem_NativeAudioManager_nativeSetVolume(
+        JNIEnv *env,
+        jobject /* this */,
+        jfloat volumeJava) {
+    audioManager->setVolume(volumeJava);
 }
 
 }

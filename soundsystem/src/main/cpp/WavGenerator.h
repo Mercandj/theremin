@@ -18,6 +18,10 @@ public:
 
     const void play(int id);
 
+    inline void setVolume(float volume) {
+        this->volume = volume;
+    }
+
 private:
     int lastPlayedId = 0;
     long *currentPositionL;
@@ -25,6 +29,8 @@ private:
     int16_t **buffers;
     long *sizes;
     bool loaded = false;
+
+    float volume = 1;
 
     long extractWav(const char *filePath, int id);
 };

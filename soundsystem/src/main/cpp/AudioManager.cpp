@@ -74,16 +74,16 @@ AudioManager::onAudioReady(oboe::AudioStream *audioStream, void *audioData, int3
         for (int i = 0; i < channelCount; ++i) {
             wavGenerator->render(static_cast<float *>(audioData) + i, i, channelCount, numFrames);
         }
-        for (int i = 0; i < channelCount; ++i) {
-            mOscillator->render(static_cast<float *>(audioData) + i, channelCount, numFrames);
-        }
+        //for (int i = 0; i < channelCount; ++i) {
+        //    mOscillator->render(static_cast<float *>(audioData) + i, channelCount, numFrames);
+        //}
     } else {
         for (int i = 0; i < channelCount; ++i) {
             wavGenerator->render(static_cast<int16_t *>(audioData) + i, i, channelCount, numFrames);
         }
-        for (int i = 0; i < channelCount; ++i) {
-            mOscillator->render(static_cast<int16_t *>(audioData) + i, channelCount, numFrames);
-        }
+        //for (int i = 0; i < channelCount; ++i) {
+        //    mOscillator->render(static_cast<int16_t *>(audioData) + i, channelCount, numFrames);
+        //}
     }
     return oboe::DataCallbackResult::Continue;
 }

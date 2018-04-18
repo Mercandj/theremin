@@ -2,10 +2,11 @@ package com.mercandalli.android.apps.theremin.main;
 
 import android.app.Application;
 
-import com.mercandalli.android.apps.theremin.audio.AudioManager;
-import com.mercandalli.android.apps.theremin.audio.AudioModule;
+import com.mercandalli.android.sdk.soundsystem.AudioManager;
+import com.mercandalli.android.sdk.soundsystem.SoundSystemModule;
 import com.mercandalli.android.apps.theremin.main_thread.MainThreadModule;
 import com.mercandalli.android.apps.theremin.main_thread.MainThreadPost;
+import com.mercandalli.android.sdk.soundsystem.ThereminManager;
 
 public class MainGraph {
 
@@ -27,11 +28,14 @@ public class MainGraph {
 
     private final MainThreadPost mainThreadPost;
     private final AudioManager audioManager;
+    private final ThereminManager thereminManager;
 
     private MainGraph(Application application) {
         MainThreadModule mainThreadModule = new MainThreadModule();
         mainThreadPost = mainThreadModule.provideMainThreadPost();
-        audioManager = new AudioModule(application).provideAudioManager();
+        SoundSystemModule soundSystemModule = new SoundSystemModule(application);
+        audioManager = soundSystemModule.provideAudioManager();
+        thereminManager = soundSystemModule.provideThereminManager();
     }
 
     public MainThreadPost provideMainThreadPost() {
@@ -40,5 +44,9 @@ public class MainGraph {
 
     public AudioManager provideAudioManager() {
         return audioManager;
+    }
+
+    public ThereminManager provideThereminManager() {
+        return thereminManager;
     }
 }
