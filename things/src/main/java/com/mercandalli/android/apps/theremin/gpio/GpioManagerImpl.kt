@@ -144,6 +144,10 @@ class GpioManagerImpl private constructor(
 
     @Throws(IOException::class, InterruptedException::class)
     private fun readDistanceSync() {
+        if (triggerGpio == null) {
+            return
+        }
+
         // Just to be sure, set the trigger first to false
         triggerGpio!!.value = false
         Thread.sleep(0, 2_000)

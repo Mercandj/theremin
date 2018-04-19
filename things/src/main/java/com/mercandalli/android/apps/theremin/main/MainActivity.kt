@@ -7,15 +7,17 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.view.View
+import android.widget.SeekBar
 import android.widget.TextView
 import com.mercandalli.android.apps.theremin.R
 import com.mercandalli.android.apps.theremin.application.AppUtils.launchApp
-import com.mercandalli.android.sdk.soundsystem.AudioManager
 import com.mercandalli.android.apps.theremin.gpio.GpioManagerImpl
 import com.mercandalli.android.apps.theremin.wifi.WifiUtils.Companion.wifiIpAddress
-import com.mercandalli.android.sdk.soundsystem.SoundSystemModule.Companion.audioManager
 import com.mercandalli.android.sdk.soundsystem.ThereminManager
-import java.util.concurrent.TimeUnit
+import com.jjoe64.graphview.series.LineGraphSeries
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.series.DataPoint
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         snackbar.dismiss()
     }
     private lateinit var distanceTextView: TextView
+    private lateinit var distanceSeekBar: SeekBar
 
     private val gpioManager = GpioManagerImpl.getInstanceInternal()
     private var gpio7RefreshRate = 300
@@ -47,10 +50,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.activity_main_ip)!!.text = wifiIpAddress(this).toString()
-        distanceTextView = findViewById(R.id.activity_main_distance_output)
+        distanceTextView = findViewById(R.id.activity_main_distance_text)
+        distanceSeekBar = findViewById(R.id.activity_main_distance_seekbar)
         snackbar = Snackbar.make(window.decorView.findViewById(android.R.id.content),
                 "Something detected, so refreshing...", Snackbar.LENGTH_INDEFINITE)
 
+        /*
+        val graph = findViewById<GraphView>(R.id.activity_main_graph)
+        val series = LineGraphSeries<DataPoint>(arrayOf(
+                DataPoint(0.0, 1.0),
+                DataPoint(1.0, 5.0),
+                DataPoint(2.0, 3.0),
+                DataPoint(3.0, 2.0),
+                DataPoint(4.0, 6.0)))
+        graph.addSeries(series)
+*/
         handler.post(runnableUpdateGpio7)
         handler.post(runnableUpdateDistance)
         thereminManager = MainGraph.get().provideThereminManager()
@@ -91,35 +105,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun syncDistance() {
         val distanceInt = gpioManager.getDistance()
-        distanceTextView.text = "Distance: $distanceInt cm"
+        distanceTextView.text = if (distanceInt > 100) "Distance: >100 cm" else "Distance: $distanceInt cm"
+        distanceSeekBar.progress = distanceInt
         thereminManager.onDistanceChanged(distanceInt)
-
-        /*
-        val frequencyMax = 650.0
-        val frequencyMin = 150.0
-
-        val frequency = frequencyMin +
-                (frequencyMax - frequencyMin) * distanceInt.toFloat() / 100f
-        audioManager.setSineFrequency(frequency)
-
-        if (lastPlayTime < System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3)) {
-            when (distanceInt) {
-                in 0..25 -> {
-                    audioManager.play(samples[0])
-                }
-                in 25..50 -> {
-                    audioManager.play(samples[1])
-                }
-                in 50..75 -> {
-                    audioManager.play(samples[2])
-                }
-                in 75..100 -> {
-                    audioManager.play(samples[3])
-                }
-            }
-            lastPlayTime = System.currentTimeMillis()
-        }
-        */
 
         if (distanceInt < 40) {
             handler.removeCallbacks(runnableDismissSnackbar)
@@ -128,6 +116,4 @@ class MainActivity : AppCompatActivity() {
             handler.postDelayed(runnableDismissSnackbar, 1_500)
         }
     }
-
-    private var lastPlayTime: Long = 0
 }

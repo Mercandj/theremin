@@ -8,38 +8,50 @@ static const long MAX_FILE_SIZE = 30000000;
 
 static float shortToFloat(int16_t i);
 
+static float cleanFloat(float f);
+
 WavGenerator::WavGenerator() {
 }
 
-void WavGenerator::render(int16_t *buffer, int channel, int32_t channelStride, int32_t numFrames) {
+void WavGenerator::render(int16_t *buffer, int32_t channelStride, int32_t numFrames) {
     // TODO
 }
 
-void WavGenerator::render(float *buffer, int channel, int32_t channelCount, int32_t numFrames) {
-    if (!loaded || currentPositionL[lastPlayedId] < 0 || currentPositionR[lastPlayedId] < 0) {
-        memset(buffer, 0, sizeof(float) * numFrames);
+void WavGenerator::render(float *buffer, int32_t channelCount, int32_t numFrames) {
+    if (channelCount > 2) {
+        throw;
+    }
+    if (volume < 0.2 || !loaded || currentPositionL[lastPlayedId] < 0 ||
+        currentPositionR[lastPlayedId] < 0) {
+        memset(buffer, 0, sizeof(float) * channelCount * numFrames);
         return;
     }
-    if (channel == 0) {
-        for (int i = 0, sampleIndex = 0; i < numFrames; i++) {
-            buffer[sampleIndex] = shortToFloat(
-                    buffers[lastPlayedId][currentPositionL[lastPlayedId]]) * volume;
-            sampleIndex += channelCount;
-            currentPositionL[lastPlayedId] += channelCount;
+    for (int i = 0; i < numFrames * channelCount; i++) {
+        if (i % 2 == 0) {
+            long channelBufferPosition = currentPositionL[lastPlayedId];
+            if (channelBufferPosition < 0) {
+                buffer[i] = 0;
+            } else {
+                buffer[i] = cleanFloat(
+                        shortToFloat(buffers[lastPlayedId][channelBufferPosition]) * volume);
+                currentPositionL[lastPlayedId] += channelCount;
+            }
+        } else {
+            long channelBufferPosition = currentPositionR[lastPlayedId];
+            if (channelBufferPosition < 0) {
+                buffer[i] = 0;
+            } else {
+                buffer[i] = cleanFloat(
+                        shortToFloat(buffers[lastPlayedId][channelBufferPosition]) * volume);
+                currentPositionR[lastPlayedId] += channelCount;
+            }
         }
-        if (currentPositionL[lastPlayedId] >= sizes[lastPlayedId]) {
-            currentPositionL[lastPlayedId] = -1;
-        }
-    } else {
-        for (int i = 0, sampleIndex = 0; i < numFrames; i++) {
-            buffer[sampleIndex] = shortToFloat(
-                    buffers[lastPlayedId][currentPositionR[lastPlayedId]]) * volume;
-            sampleIndex += channelCount;
-            currentPositionR[lastPlayedId] += channelCount;
-        }
-        if (currentPositionR[lastPlayedId] >= sizes[lastPlayedId]) {
-            currentPositionR[lastPlayedId] = -1;
-        }
+    }
+    if (currentPositionL[lastPlayedId] >= sizes[lastPlayedId]) {
+        currentPositionL[lastPlayedId] = -1;
+    }
+    if (currentPositionR[lastPlayedId] >= sizes[lastPlayedId]) {
+        currentPositionR[lastPlayedId] = -1;
     }
 }
 
@@ -77,6 +89,12 @@ long WavGenerator::extractWav(const char *filePath, int id) {
 static float shortToFloat(int16_t i) {
     float f;
     f = ((float) i) / (float) 32768;
+    if (f > 1) f = 1;
+    if (f < -1) f = -1;
+    return f;
+}
+
+static float cleanFloat(float f) {
     if (f > 1) f = 1;
     if (f < -1) f = -1;
     return f;

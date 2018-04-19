@@ -25,7 +25,7 @@ class ThereminManagerImpl(
 
     override fun onDistanceChanged(distance: Int) {
         volume = 1f - distance.toFloat() / 100f
-        audioManager.setVolume(volume)
+        audioManager.setVolume(volume * 6)
     }
 
     private fun runnableJob() {

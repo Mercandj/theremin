@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="toolbar_height">44dp</dimen>
-    <dimen name="toolbar_height_2">88dp</dimen>
+    <dimen name="toolbar_height">52dp</dimen>
+    <dimen name="toolbar_height_2">104dp</dimen>
 
     <!-- Default values -->
     <dimen name="default_space_quart">2dp</dimen>
