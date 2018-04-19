@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.view.KeyEvent
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
@@ -23,14 +22,13 @@ class MainActivity : AppCompatActivity() {
     private var runnableDismissSnackbar = Runnable {
         snackbar.dismiss()
     }
-    private lateinit var distanceTextView: TextView
-    private lateinit var distanceSeekBar: SeekBar
 
     private val gpioManager = GpioManagerImpl.getInstanceInternal()
-    private var gpio7RefreshRate = 300
+    private val refreshRate = 300
 
+    private lateinit var distanceTextView: TextView
+    private lateinit var distanceSeekBar: SeekBar
     private lateinit var snackbar: Snackbar
-
     private lateinit var thereminManager: ThereminManager
 
     @SuppressLint("SetTextI18n")
@@ -67,20 +65,10 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        when (keyCode) {
-            KeyEvent.KEYCODE_F1 -> {
-
-                return true
-            }
-        }
-        return super.onKeyUp(keyCode, event)
-    }
-
     private fun runnableJob() {
         syncDistance()
         handler.removeCallbacks(runnableUpdateGpio7)
-        handler.postDelayed(runnableUpdateGpio7, gpio7RefreshRate.toLong())
+        handler.postDelayed(runnableUpdateGpio7, refreshRate.toLong())
     }
 
     private fun runnableDistance() {
@@ -95,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         distanceSeekBar.progress = distanceInt
         thereminManager.onDistanceChanged(distanceInt)
 
-        if (distanceInt < 40) {
+        if (distanceInt < 5) {
             handler.removeCallbacks(runnableDismissSnackbar)
             snackbar.show()
         } else {
