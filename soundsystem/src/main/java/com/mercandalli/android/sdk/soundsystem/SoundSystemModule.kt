@@ -18,7 +18,7 @@ class SoundSystemModule constructor(private val context: Context) {
 
     fun provideThereminManager(): ThereminManager {
         if (thereminManager == null) {
-            thereminManager = ThereminManagerImpl(provideAudioManager())
+            thereminManager = ThereminManagerImpl(provideAudioManager(), context)
         }
         return thereminManager!!
     }

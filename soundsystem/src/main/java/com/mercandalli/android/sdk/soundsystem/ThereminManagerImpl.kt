@@ -1,23 +1,49 @@
 package com.mercandalli.android.sdk.soundsystem
 
+import android.content.Context
 import android.os.Handler
+import com.mercandalli.android.sdk.soundsystem.lesson.ParseSteps
+import com.mercandalli.android.sdk.soundsystem.lesson.Step
 
 class ThereminManagerImpl(
-        private val audioManager: AudioManager
+        private val audioManager: AudioManager,
+        private val context: Context
 ) : ThereminManager {
 
     private val samples = listOf(
+            "wav/shape-of-you/dpm_shape_of_you_a_bass_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_bass_02.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_bass_03.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_bass_04.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_hat_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_kick_01.wav",
             "wav/shape-of-you/dpm_shape_of_you_a_melody_01.wav",
             "wav/shape-of-you/dpm_shape_of_you_a_melody_02.wav",
             "wav/shape-of-you/dpm_shape_of_you_a_melody_03.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_04.wav")
+            "wav/shape-of-you/dpm_shape_of_you_a_melody_04.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_snare_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_a_vox_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_bass_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_bass_02.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_bass_03.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_bass_04.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_hat_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_kick_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_melody_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_melody_02.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_melody_03.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_melody_04.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_snare_01.wav",
+            "wav/shape-of-you/dpm_shape_of_you_b_vox_01.wav")
 
     private val handler = Handler()
     private var runnable = Runnable { runnableJob() }
-    private var indexSample = 0
+    private var indexStep = 0
+    private var steps: List<Step>
 
     init {
         audioManager.load(samples)
+        steps = ParseSteps(context).parse()
         runnableJob()
     }
 
@@ -30,16 +56,25 @@ class ThereminManagerImpl(
 
     private fun runnableJob() {
         audioManager.setVolume(volume)
-        audioManager.play(samples[indexSample])
-        increaseIndexSample()
+        val step = steps[indexStep]
+        val files = step.files
+        for (file in files) {
+            audioManager.play("wav/shape-of-you/dpm_shape_of_you_a_$file.wav")
+        }
         handler.removeCallbacks(runnable)
-        handler.postDelayed(runnable, 1300)
+        val time = if (indexStep == 0) {
+            (step.time * 1000).toLong()
+        } else {
+            ((step.time - steps[indexStep - 1].time) * 1000).toLong()
+        }
+        increaseIndexSample()
+        handler.postDelayed(runnable, time)
     }
 
     private fun increaseIndexSample() {
-        indexSample++
-        if (indexSample >= samples.size) {
-            indexSample = 0
+        indexStep++
+        if (indexStep >= steps.size) {
+            indexStep = 0
         }
     }
 
