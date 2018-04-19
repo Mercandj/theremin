@@ -14,10 +14,6 @@ import com.mercandalli.android.apps.theremin.application.AppUtils.launchApp
 import com.mercandalli.android.apps.theremin.gpio.GpioManagerImpl
 import com.mercandalli.android.apps.theremin.wifi.WifiUtils.Companion.wifiIpAddress
 import com.mercandalli.android.sdk.soundsystem.ThereminManager
-import com.jjoe64.graphview.series.LineGraphSeries
-import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.series.DataPoint
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -55,16 +51,6 @@ class MainActivity : AppCompatActivity() {
         snackbar = Snackbar.make(window.decorView.findViewById(android.R.id.content),
                 "Something detected, so refreshing...", Snackbar.LENGTH_INDEFINITE)
 
-        /*
-        val graph = findViewById<GraphView>(R.id.activity_main_graph)
-        val series = LineGraphSeries<DataPoint>(arrayOf(
-                DataPoint(0.0, 1.0),
-                DataPoint(1.0, 5.0),
-                DataPoint(2.0, 3.0),
-                DataPoint(3.0, 2.0),
-                DataPoint(4.0, 6.0)))
-        graph.addSeries(series)
-*/
         handler.post(runnableUpdateGpio7)
         handler.post(runnableUpdateDistance)
         thereminManager = MainGraph.get().provideThereminManager()
@@ -105,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun syncDistance() {
         val distanceInt = gpioManager.getDistance()
-        distanceTextView.text = if (distanceInt > 100) "Distance: >100 cm" else "Distance: $distanceInt cm"
+        distanceTextView.text = if (distanceInt >= 100) "Distance: >100 cm" else "Distance: $distanceInt cm"
         distanceSeekBar.progress = distanceInt
         thereminManager.onDistanceChanged(distanceInt)
 
