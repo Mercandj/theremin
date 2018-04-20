@@ -23,12 +23,11 @@ public:
     }
 
 private:
-    int lastPlayedId = 0;
-    long *currentPositionL;
-    long *currentPositionR;
+    long *currentPositions;
     int16_t **buffers;
     long *sizes;
     bool loaded = false;
+    int nbSamples = 0;
 
     float volume = 1;
 

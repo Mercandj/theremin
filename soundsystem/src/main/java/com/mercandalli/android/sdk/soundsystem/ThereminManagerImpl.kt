@@ -40,6 +40,7 @@ class ThereminManagerImpl(
     private var runnable = Runnable { runnableJob() }
     private var indexStep = 0
     private var steps: List<Step>
+    private var deck = "a"
 
     init {
         audioManager.load(samples)
@@ -51,7 +52,7 @@ class ThereminManagerImpl(
 
     override fun onDistanceChanged(distance: Int) {
         volume = 1f - distance.toFloat() / 100f
-        audioManager.setVolume(volume * 6)
+        audioManager.setVolume(volume * 8)
     }
 
     private fun runnableJob() {
@@ -59,7 +60,7 @@ class ThereminManagerImpl(
         val step = steps[indexStep]
         val files = step.files
         for (file in files) {
-            audioManager.play("wav/shape-of-you/dpm_shape_of_you_a_$file.wav")
+            audioManager.play("wav/shape-of-you/dpm_shape_of_you_" + deck + "_$file.wav")
         }
         handler.removeCallbacks(runnable)
         val time = if (indexStep == 0) {
@@ -75,6 +76,7 @@ class ThereminManagerImpl(
         indexStep++
         if (indexStep >= steps.size) {
             indexStep = 0
+            deck = if (deck == "a") "b" else "a"
         }
     }
 
