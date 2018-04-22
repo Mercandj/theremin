@@ -1,82 +1,88 @@
 package com.mercandalli.android.sdk.soundsystem
 
-import android.content.Context
-import android.os.Handler
-import com.mercandalli.android.sdk.soundsystem.lesson.ParseSteps
-import com.mercandalli.android.sdk.soundsystem.lesson.Step
-
 class ThereminManagerImpl(
-        private val audioManager: AudioManager,
-        private val context: Context
+        private val player: Player
 ) : ThereminManager {
 
-    private val samples = listOf(
-            "wav/shape-of-you/dpm_shape_of_you_a_bass_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_bass_02.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_bass_03.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_bass_04.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_hat_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_kick_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_02.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_03.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_melody_04.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_snare_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_a_vox_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_bass_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_bass_02.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_bass_03.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_bass_04.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_hat_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_kick_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_melody_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_melody_02.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_melody_03.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_melody_04.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_snare_01.wav",
-            "wav/shape-of-you/dpm_shape_of_you_b_vox_01.wav")
-
-    private val handler = Handler()
-    private var runnable = Runnable { runnableJob() }
-    private var indexStep = 0
-    private var steps: List<Step>
-    private var deck = "a"
+    private val listeners = ArrayList<ThereminManager.ThereminListener>()
 
     init {
-        audioManager.load(samples)
-        steps = ParseSteps(context).parse()
-        runnableJob()
-    }
+        player.load("asset:///ed_sheeran_shape_of_you_instrumental.mp3")
+        player.play()
+        player.registerListener(object : Player.PlayerListener {
+            override fun onPrepare(player: Player) {
+            }
 
-    private var volume: Float = 0f
+            override fun onError(player: Player) {
+            }
+
+            override fun onBufferingStart(player: Player) {
+            }
+
+            override fun onBufferingComplete(player: Player) {
+            }
+
+            override fun onComplete(player: Player) {
+                player.seekTo(0)
+                player.play()
+            }
+        })
+        setPitch(1f)
+        setSpeed(1f)
+    }
 
     override fun onDistanceChanged(distance: Int) {
-        volume = 1f - distance.toFloat() / 100f
-        audioManager.setVolume(volume * 8)
+        if (distance > 90) {
+            if (player.isPlaying) player.pause()
+            return
+        }
+        if (!player.isPlaying) player.play()
+        if (distance > 50) {
+            setPitch(1.0f)
+            setSpeed(0.5f)
+            return
+        }
+        if (distance < 10) {
+            setPitch(0.5f)
+            setSpeed(1.5f)
+            return
+        }
+        val distancePercent = ((distance - 10) * (5f / 2f)) / 100f
+        val distancePercentAroundZero = distancePercent - 0.5f
+        setPitch(1f + distancePercentAroundZero)
+        setSpeed(1f - distancePercentAroundZero)
     }
 
-    private fun runnableJob() {
-        audioManager.setVolume(volume)
-        val step = steps[indexStep]
-        val files = step.files
-        for (file in files) {
-            audioManager.play("wav/shape-of-you/dpm_shape_of_you_" + deck + "_$file.wav")
-        }
-        handler.removeCallbacks(runnable)
-        val time = if (indexStep == 0) {
-            (step.time * 1000).toLong()
-        } else {
-            ((step.time - steps[indexStep - 1].time) * 1000).toLong()
-        }
-        increaseIndexSample()
-        handler.postDelayed(runnable, time)
+    override fun getPitch(): Float {
+        return player.getPitch()
     }
 
-    private fun increaseIndexSample() {
-        indexStep++
-        if (indexStep >= steps.size) {
-            indexStep = 0
-            deck = if (deck == "a") "b" else "a"
+    override fun getSpeed(): Float {
+        return player.getSpeed()
+    }
+
+    override fun registerThereminListener(listener: ThereminManager.ThereminListener) {
+        if (listeners.contains(listener)) {
+            return
+        }
+        listeners.add(listener)
+    }
+
+    override fun unregisterThereminListener(listener: ThereminManager.ThereminListener) {
+        listeners.remove(listener)
+    }
+
+    private fun setPitch(pitch: Float) {
+        player.setPitch(pitch)
+        for (listener in listeners) {
+            listener.onPitchChanged()
+        }
+    }
+
+    private fun setSpeed(speed: Float) {
+        player.setSpeed(speed)
+        for (listener in listeners) {
+            listener.onSpeedChanged()
         }
     }
 

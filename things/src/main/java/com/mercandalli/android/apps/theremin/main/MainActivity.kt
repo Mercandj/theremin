@@ -28,13 +28,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var distanceTextView: TextView
     private lateinit var distanceSeekBar: SeekBar
+    private lateinit var speedTextView: TextView
+    private lateinit var speedSeekBar: SeekBar
     private lateinit var snackbar: Snackbar
     private lateinit var thereminManager: ThereminManager
+    private val thereminListener = createThereminListener()
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        thereminManager = MainGraph.get().provideThereminManager()
 
         findViewById<View>(R.id.activity_main_at_launcher)!!.setOnClickListener {
             launchApp(
@@ -46,12 +50,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.activity_main_ip)!!.text = wifiIpAddress(this).toString()
         distanceTextView = findViewById(R.id.activity_main_distance_text)
         distanceSeekBar = findViewById(R.id.activity_main_distance_seekbar)
+        speedTextView = findViewById(R.id.activity_main_speed_text)
+        speedSeekBar = findViewById(R.id.activity_main_speed_seekbar)
         snackbar = Snackbar.make(window.decorView.findViewById(android.R.id.content),
                 "Something detected, so refreshing...", Snackbar.LENGTH_INDEFINITE)
 
         handler.post(runnableUpdateGpio7)
         handler.post(runnableUpdateDistance)
-        thereminManager = MainGraph.get().provideThereminManager()
+
+        thereminManager.registerThereminListener(thereminListener)
+        syncSpeedAndPitchUI()
 
         if (savedInstanceState == null) {
             gpioManager.startDistanceMeasure()
@@ -62,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         handler.removeCallbacks(runnableUpdateGpio7)
         handler.removeCallbacks(runnableUpdateDistance)
         handler.removeCallbacks(runnableDismissSnackbar)
+        thereminManager.unregisterThereminListener(thereminListener)
         super.onDestroy()
     }
 
@@ -89,5 +98,23 @@ class MainActivity : AppCompatActivity() {
         } else {
             handler.postDelayed(runnableDismissSnackbar, 1_500)
         }
+    }
+
+    private fun createThereminListener(): ThereminManager.ThereminListener {
+        return object : ThereminManager.ThereminListener {
+            override fun onPitchChanged() {
+                syncSpeedAndPitchUI()
+            }
+
+            override fun onSpeedChanged() {
+                syncSpeedAndPitchUI()
+            }
+        }
+    }
+
+    private fun syncSpeedAndPitchUI() {
+        val speed = (thereminManager.getSpeed() * 100f).toInt()
+        speedTextView.text = "Speed: $speed %"
+        speedSeekBar.progress = speed
     }
 }

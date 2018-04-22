@@ -18,9 +18,16 @@ class SoundSystemModule constructor(private val context: Context) {
 
     fun provideThereminManager(): ThereminManager {
         if (thereminManager == null) {
-            thereminManager = ThereminManagerImpl(provideAudioManager(), context)
+            thereminManager = ThereminManagerImpl(providePlayer())
         }
         return thereminManager!!
+    }
+
+    fun providePlayer(): Player {
+        if (player == null) {
+            player = PlayerProvider.create(context)
+        }
+        return player!!
     }
 
     companion object {
@@ -30,6 +37,8 @@ class SoundSystemModule constructor(private val context: Context) {
         var audioManager: AudioManager? = null
         @JvmStatic
         var thereminManager: ThereminManager? = null
+        @JvmStatic
+        var player: Player? = null
     }
 
 }
