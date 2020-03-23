@@ -50,3 +50,4 @@ gradle.properties
 *.hprof
 
 /lib-oboe
+.cxx

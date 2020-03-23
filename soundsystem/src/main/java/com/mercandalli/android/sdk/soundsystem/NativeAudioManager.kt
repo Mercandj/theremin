@@ -5,7 +5,8 @@ import java.io.*
 import java.util.*
 
 internal class NativeAudioManager internal constructor(
-        private val context: Context) : AudioManager {
+    private val context: Context
+) : AudioManager {
 
     private val assetsFilePaths = ArrayList<String>()
 
@@ -52,8 +53,9 @@ internal class NativeAudioManager internal constructor(
      * Returns the list of internal storage paths.
      */
     private fun copyAssetsOnInternalStorage(
-            context: Context,
-            assetsFilePaths: List<String>): ArrayList<String> {
+        context: Context,
+        assetsFilePaths: List<String>
+    ): ArrayList<String> {
         val assetManager = context.applicationContext.assets
         val internalStorageFilesDirAbsolutePath = context.filesDir.absolutePath
         val result = ArrayList<String>()

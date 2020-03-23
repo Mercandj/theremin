@@ -20,9 +20,9 @@ interface Player {
 
     fun release()
 
-    fun getPitch():Float
+    fun getPitch(): Float
 
-    fun getSpeed():Float
+    fun getSpeed(): Float
 
     /**
      * Sets the audio volume, with 0 being silence and 1 being unity gain.
@@ -59,5 +59,4 @@ interface Player {
 
         fun onBufferingComplete(player: Player)
     }
-
 }

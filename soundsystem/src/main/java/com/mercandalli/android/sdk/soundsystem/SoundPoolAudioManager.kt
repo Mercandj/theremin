@@ -6,9 +6,14 @@ import android.util.Log
 import java.io.IOException
 
 internal class SoundPoolAudioManager constructor(
-        private val assetManager: AssetManager) : AudioManager {
+    private val assetManager: AssetManager
+) : AudioManager {
 
-    private val soundPool: SoundPool = SoundPool(20, android.media.AudioManager.STREAM_MUSIC, 0)
+    private val soundPool: SoundPool = SoundPool(
+        20,
+        android.media.AudioManager.STREAM_MUSIC,
+        0
+    )
 
     private var loaded = HashMap<Int, Boolean>()
     private var slots = HashMap<String, Int>()
@@ -30,7 +35,6 @@ internal class SoundPoolAudioManager constructor(
     }
 
     override fun setSineFrequency(frequency: Double) {
-
     }
 
     override fun setOnPausedListener(listener: AudioManager.OnPausedListener?) {
