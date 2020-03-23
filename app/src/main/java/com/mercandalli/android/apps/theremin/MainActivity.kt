@@ -1,6 +1,6 @@
 package com.mercandalli.android.apps.theremin
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.SeekBar
 import android.widget.TextView
@@ -25,19 +25,19 @@ class MainActivity : AppCompatActivity() {
         distanceTextView = findViewById(R.id.activity_main_distance_text)
         distanceSeekBar = findViewById(R.id.activity_main_distance_seekbar)
         distanceSeekBar.setOnSeekBarChangeListener(
-                object : SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                        syncSeekbar(seekBar!!)
-                    }
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    syncSeekbar(seekBar!!)
+                }
 
-                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                        syncSeekbar(seekBar!!)
-                    }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    syncSeekbar(seekBar!!)
+                }
 
-                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                        syncSeekbar(seekBar!!)
-                    }
-                })
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    syncSeekbar(seekBar!!)
+                }
+            })
         speedTextView = findViewById(R.id.activity_main_speed_text)
         speedSeekBar = findViewById(R.id.activity_main_speed_seekbar)
 

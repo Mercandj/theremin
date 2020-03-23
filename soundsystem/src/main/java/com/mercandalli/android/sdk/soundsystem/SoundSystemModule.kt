@@ -2,7 +2,9 @@ package com.mercandalli.android.sdk.soundsystem
 
 import android.content.Context
 
-class SoundSystemModule constructor(private val context: Context) {
+class SoundSystemModule(
+    private val context: Context
+) {
 
     @Suppress("ConstantConditionIf")
     fun provideAudioManager(): AudioManager {
@@ -35,10 +37,11 @@ class SoundSystemModule constructor(private val context: Context) {
 
         @JvmStatic
         var audioManager: AudioManager? = null
+
         @JvmStatic
         var thereminManager: ThereminManager? = null
+
         @JvmStatic
         var player: Player? = null
     }
-
 }

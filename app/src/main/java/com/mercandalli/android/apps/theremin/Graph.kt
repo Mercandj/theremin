@@ -15,8 +15,5 @@ class Graph {
         fun init(context: Context) {
             thereminManager = SoundSystemModule(context.applicationContext).provideThereminManager()
         }
-
     }
-
-
 }

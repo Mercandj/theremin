@@ -1,13 +1,14 @@
 package com.mercandalli.android.apps.theremin.gpio
 
-class DistanceFifo(private val size: Int) {
+class DistanceFifo(
+    private val size: Int
+) {
 
     private val array = ArrayList<Double>(2 * size)
     private val innerArraySizeMinusOne = 2 * size - 1
 
     val distance: Int
         get() = computeDistance()
-
 
     fun add(element: Double) {
         synchronized(array) {
@@ -46,5 +47,4 @@ class DistanceFifo(private val size: Int) {
             return subList.average().toInt()
         }
     }
-
 }

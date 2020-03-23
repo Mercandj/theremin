@@ -10,8 +10,9 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DataSource
 
 internal class SimpleExoPlayerWrapper(
-        private val simpleExoPlayer: SimpleExoPlayer,
-        private val dataSourceFactory: DataSource.Factory) : Player {
+    private val simpleExoPlayer: SimpleExoPlayer,
+    private val dataSourceFactory: DataSource.Factory
+) : Player {
 
     private var isPlayingInternal = false
     private var playerListener: Player.PlayerListener? = null
@@ -34,11 +35,11 @@ internal class SimpleExoPlayerWrapper(
 
     override fun load(path: String) {
         val mediaSource = ExtractorMediaSource(
-                Uri.parse(path),
-                dataSourceFactory,
-                DefaultExtractorsFactory(),
-                null,
-                null)
+            Uri.parse(path),
+            dataSourceFactory,
+            DefaultExtractorsFactory(),
+            null,
+            null)
         simpleExoPlayer.prepare(mediaSource)
         playerListener?.onPrepare(this@SimpleExoPlayerWrapper)
     }
@@ -92,47 +93,41 @@ internal class SimpleExoPlayerWrapper(
         playerListener = null
     }
 
-    private fun createExoPlayerEventListener(): ExoPlayer.EventListener {
-        return object : ExoPlayer.EventListener {
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+    private fun createExoPlayerEventListener() = object : ExoPlayer.EventListener {
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
 
-            }
+        }
 
-            override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
 
-            }
+        }
 
-            override fun onPlayerError(error: ExoPlaybackException?) {
-                playerListener?.onError(this@SimpleExoPlayerWrapper)
-            }
+        override fun onPlayerError(error: ExoPlaybackException?) {
+            playerListener?.onError(this@SimpleExoPlayerWrapper)
+        }
 
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                when (playbackState) {
-                    ExoPlayer.STATE_BUFFERING ->
-                        playerListener?.onBufferingStart(this@SimpleExoPlayerWrapper)
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            when (playbackState) {
+                ExoPlayer.STATE_BUFFERING ->
+                    playerListener?.onBufferingStart(this@SimpleExoPlayerWrapper)
 
-                    ExoPlayer.STATE_READY -> {
-                        playerListener?.onBufferingComplete(this@SimpleExoPlayerWrapper)
-                        isPlayingInternal = playWhenReady
-                    }
-
-                    ExoPlayer.STATE_ENDED ->
-                        playerListener?.onComplete(this@SimpleExoPlayerWrapper)
+                ExoPlayer.STATE_READY -> {
+                    playerListener?.onBufferingComplete(this@SimpleExoPlayerWrapper)
+                    isPlayingInternal = playWhenReady
                 }
 
+                ExoPlayer.STATE_ENDED ->
+                    playerListener?.onComplete(this@SimpleExoPlayerWrapper)
             }
+        }
 
-            override fun onLoadingChanged(isLoading: Boolean) {
+        override fun onLoadingChanged(isLoading: Boolean) {
+        }
 
-            }
+        override fun onPositionDiscontinuity() {
+        }
 
-            override fun onPositionDiscontinuity() {
-
-            }
-
-            override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
-
-            }
+        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
 
         }
     }

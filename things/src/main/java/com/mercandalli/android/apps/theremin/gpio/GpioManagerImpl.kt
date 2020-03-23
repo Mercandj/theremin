@@ -3,14 +3,15 @@ package com.mercandalli.android.apps.theremin.gpio
 import android.content.ContentValues
 import android.util.Log
 import com.google.android.things.pio.Gpio
-import com.google.android.things.pio.PeripheralManagerService
+import com.google.android.things.pio.PeripheralManager
 import com.mercandalli.android.apps.theremin.main.MainGraph
 import java.io.IOException
 import com.mercandalli.android.apps.theremin.main_thread.MainThreadPost
 
 class GpioManagerImpl private constructor(
-        private val peripheralManagerService: PeripheralManagerService,
-        private val mainThreadPost: MainThreadPost) : GpioManager {
+    private val peripheralManager: PeripheralManager,
+    private val mainThreadPost: MainThreadPost
+) : GpioManager {
 
     private var echoGpio: Gpio? = null
     private var triggerGpio: Gpio? = null
@@ -44,15 +45,12 @@ class GpioManagerImpl private constructor(
     })
 
     init {
-        // Initialize PeripheralManagerService
-        val service = PeripheralManagerService()
-
         // List all available GPIOs
-        Log.d(TAG, "Available GPIOs: " + service.gpioList)
+        Log.d(TAG, "Available GPIOs: " + peripheralManager.gpioList)
 
         try {
             // Create GPIO connection.
-            echoGpio = service.openGpio(GpioManager.ECHO_PIN_NAME)
+            echoGpio = peripheralManager.openGpio(GpioManager.ECHO_PIN_NAME)
             // Configure as an input.
             echoGpio!!.setDirection(Gpio.DIRECTION_IN)
             // Enable edge trigger events.
@@ -66,7 +64,7 @@ class GpioManagerImpl private constructor(
 
         try {
             // Create GPIO connection.
-            triggerGpio = service.openGpio(GpioManager.TRIGGER_PIN_NAME)
+            triggerGpio = peripheralManager.openGpio(GpioManager.TRIGGER_PIN_NAME)
 
             // Configure as an output with default LOW (false) value.
             triggerGpio!!.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
@@ -82,7 +80,7 @@ class GpioManagerImpl private constructor(
     override fun open(name: String): Gpio {
         var gpio: Gpio? = null
         try {
-            gpio = peripheralManagerService.openGpio(name)
+            gpio = peripheralManager.openGpio(name)
         } catch (e: IOException) {
             Log.e(TAG, "open error", e)
         }
@@ -194,7 +192,7 @@ class GpioManagerImpl private constructor(
 
     companion object {
 
-        private val TAG = "GpioManager jm/debug"
+        private const val TAG = "GpioManager jm/debug"
 
         @JvmStatic
         private var instance: GpioManager? = null
@@ -203,8 +201,8 @@ class GpioManagerImpl private constructor(
             if (instance == null) {
                 Log.d(TAG, "Create GpioManagerImpl")
                 instance = GpioManagerImpl(
-                        PeripheralManagerService(),
-                        MainGraph.get().provideMainThreadPost())
+                    PeripheralManager.getInstance(),
+                    MainGraph.get().provideMainThreadPost())
 
             }
             return instance!!

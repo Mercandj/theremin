@@ -3,8 +3,8 @@ package com.mercandalli.android.apps.theremin.main
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
@@ -42,9 +42,9 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.activity_main_at_launcher)!!.setOnClickListener {
             launchApp(
-                    this,
-                    "com.android.iotlauncher",
-                    "com.android.iotlauncher.DefaultIoTLauncher")
+                this,
+                "com.android.iotlauncher",
+                "com.android.iotlauncher.DefaultIoTLauncher")
         }
 
         findViewById<TextView>(R.id.activity_main_ip)!!.text = wifiIpAddress(this).toString()
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         speedTextView = findViewById(R.id.activity_main_speed_text)
         speedSeekBar = findViewById(R.id.activity_main_speed_seekbar)
         snackbar = Snackbar.make(window.decorView.findViewById(android.R.id.content),
-                "Something detected, so refreshing...", Snackbar.LENGTH_INDEFINITE)
+            "Something detected, so refreshing...", Snackbar.LENGTH_INDEFINITE)
 
         handler.post(runnableUpdateGpio7)
         handler.post(runnableUpdateDistance)

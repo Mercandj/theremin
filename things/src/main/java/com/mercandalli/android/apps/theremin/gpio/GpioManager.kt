@@ -25,7 +25,7 @@ interface GpioManager {
         const val TRIGGER_PIN_NAME = "BCM23"
         const val ECHO_PIN_NAME = "BCM24"
 
-        const val DISTANCE_MAX_COMPUTED = 150 // cm
+        private const val DISTANCE_MAX_COMPUTED = 150 // cm
         const val DISTANCE_MAX_TIME_TO_WAIT = 58.23 * 1000.0 * DISTANCE_MAX_COMPUTED // nano
         const val DISTANCE_HARDCODED_MAX = 100 // cm
     }

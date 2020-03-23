@@ -8,22 +8,28 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 class PlayerProvider {
+
     companion object {
 
         @JvmStatic
         fun create(context: Context): Player {
             val renderersFactory = DefaultRenderersFactory(
-                    context,
-                    null,
-                    DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
-            val simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory, DefaultTrackSelector())
+                context,
+                null,
+                DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+            )
+            val simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
+                renderersFactory,
+                DefaultTrackSelector()
+            )
             val dataSourceFactory = DefaultDataSourceFactory(
-                    context,
-                    Util.getUserAgent(context, "MusicPlayer"))
+                context,
+                Util.getUserAgent(context, "MusicPlayer")
+            )
             return SimpleExoPlayerWrapper(
-                    simpleExoPlayer,
-                    dataSourceFactory)
+                simpleExoPlayer,
+                dataSourceFactory
+            )
         }
     }
-
 }

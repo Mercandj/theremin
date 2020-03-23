@@ -1,7 +1,7 @@
 package com.mercandalli.android.sdk.soundsystem
 
 class ThereminManagerImpl(
-        private val player: Player
+    private val player: Player
 ) : ThereminManager {
 
     private val listeners = ArrayList<ThereminManager.ThereminListener>()
@@ -85,5 +85,4 @@ class ThereminManagerImpl(
             listener.onSpeedChanged()
         }
     }
-
 }

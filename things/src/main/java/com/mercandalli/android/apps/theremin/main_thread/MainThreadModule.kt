@@ -8,7 +8,8 @@ class MainThreadModule {
     fun provideMainThreadPost(): MainThreadPost {
         val mainLooper = Looper.getMainLooper()
         return MainThreadPostImpl(
-                mainLooper.thread,
-                Handler(mainLooper))
+            mainLooper.thread,
+            Handler(mainLooper)
+        )
     }
 }

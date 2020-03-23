@@ -13,6 +13,7 @@ interface AudioManager {
     fun setOnPausedListener(listener: OnPausedListener?)
 
     interface OnPausedListener {
+
         fun onPaused()
     }
 }
